@@ -1,0 +1,58 @@
+import java.io.*;
+
+public class FileOperations {
+
+    // Method to write content to a file
+    public static void writeFile(String fileName, String content) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+            writer.write(content);
+            System.out.println("File written successfully.");
+        } catch (IOException e) {
+            System.err.println("Error writing to file: " + e.getMessage());
+        }
+    }
+
+    // Method to read content from a file
+    public static void readFile(String fileName) {
+        try (BufferedReader reader = new BufferedReader(new FileReader(fileName))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                System.out.println(line);
+            }
+        } catch (IOException e) {
+            System.err.println("Error reading from file: " + e.getMessage());
+        }
+    }
+
+    // Method to modify a file (append content)
+    public static void modifyFile(String fileName, String content) {
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName, true))) {
+            writer.newLine(); // Add a new line before appending
+            writer.write(content);
+            System.out.println("File modified successfully.");
+        } catch (IOException e) {
+            System.err.println("Error modifying file: " + e.getMessage());
+        }
+    }
+
+    // Main method to demonstrate file operations
+    public static void main(String[] args) {
+        String fileName = "example.txt";
+        String initialContent = "This is the initial content of the file.";
+        String additionalContent = "This is additional content.";
+
+        // Write to the file
+        writeFile(fileName, initialContent);
+
+        // Read from the file
+        System.out.println("\nReading from file:");
+        readFile(fileName);
+
+        // Modify the file (append content)
+        modifyFile(fileName, additionalContent);
+
+        // Read from the file again to see modifications
+        System.out.println("\nReading modified file:");
+        readFile(fileName);
+    }
+}
