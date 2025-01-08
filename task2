@@ -1,0 +1,65 @@
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import org.json.JSONObject;
+
+public class WeatherApiClient {
+
+    // Method to fetch weather data from a public API
+    public static String getWeatherData(String cityName) {
+        String apiKey = "your_api_key"; // Replace with your actual API key
+        String urlString = "https://api.openweathermap.org/data/2.5/weather?q=" + cityName + "&appid=" + apiKey;
+        
+        try {
+            URL url = new URL(urlString);
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+            connection.setRequestMethod("GET");
+
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+                String inputLine;
+                StringBuilder response = new StringBuilder();
+
+                while ((inputLine = in.readLine()) != null) {
+                    response.append(inputLine);
+                }
+                in.close();
+
+                return response.toString();
+            } else {
+                return "GET request failed. Response code: " + responseCode;
+            }
+        } catch (Exception e) {
+            return "Exception occurred: " + e.getMessage();
+        }
+    }
+
+    // Method to parse JSON response and display weather data
+    public static void displayWeatherData(String jsonResponse) {
+        JSONObject jsonObject = new JSONObject(jsonResponse);
+        String cityName = jsonObject.getString("name");
+        JSONObject main = jsonObject.getJSONObject("main");
+        double temperature = main.getDouble("temp");
+        double pressure = main.getDouble("pressure");
+        int humidity = main.getInt("humidity");
+
+        System.out.println("Weather Data for " + cityName + ":");
+        System.out.println("Temperature: " + temperature + "K");
+        System.out.println("Pressure: " + pressure + " hPa");
+        System.out.println("Humidity: " + humidity + "%");
+    }
+
+    // Main method to execute the application
+    public static void main(String[] args) {
+        String cityName = "London"; // Replace with desired city
+        String jsonResponse = getWeatherData(cityName);
+
+        if (!jsonResponse.startsWith("Exception") && !jsonResponse.startsWith("GET request failed")) {
+            displayWeatherData(jsonResponse);
+        } else {
+            System.out.println(jsonResponse);
+        }
+    }
+}
